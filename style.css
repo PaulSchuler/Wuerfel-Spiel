@@ -1,0 +1,281 @@
+/* Grundlegendes Layout */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding-top: 60px; /* Mehr Platz oben für den Link */
+    color: #333;
+    position: relative; /* Wichtig für die Positionierung des Links */
+}
+
+/* --------------- Hauptmenü-Link --------------- */
+#home-link {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+    padding: 8px 12px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 10; /* Stellt sicher, dass er über allem liegt */
+    transition: background-color 0.2s;
+}
+#home-link:hover {
+    background-color: #e6f2ff;
+    text-decoration: none;
+}
+/* --------------------------------------------------- */
+
+
+h1, h2 {
+    font-weight: 300;
+    text-align: center;
+}
+
+/* Spiel-Container */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    width: 90%;
+    max-width: 440px;
+    box-sizing: border-box;
+}
+
+/* Zähler (Serie & Score) */
+#streak-display, #score-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #555;
+}
+#streak-display { margin-bottom: 5px; }
+#score-display { margin-bottom: 20px; }
+#streak-counter, #score-counter {
+    color: #007bff;
+    font-size: 1.1em;
+    padding: 2px 6px;
+    background-color: #e6f2ff;
+    border-radius: 4px;
+    min-width: 1.5em;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Timer-Balken CSS */
+#timer-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    display: none;
+}
+#timer-bar {
+    width: 100%;
+    height: 100%;
+    background-color: #28a745;
+    border-radius: 6px;
+    transform-origin: left;
+    transform: scaleX(1);
+    transition: background-color 0.3s;
+}
+#timer-bar.low { background-color: #dc3545; }
+
+/* Würfel-Anzeige */
+#dice-container { display: flex; gap: 20px; margin-bottom: 30px; }
+.die {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 72px;
+    font-weight: bold;
+    background-color: #fafafa;
+    user-select: none;
+    line-height: 1;
+    /* Übergang für die Animation */
+    transition: transform 0.1s ease-out, background-color 0.1s ease-out;
+}
+
+/* NEU: Würfel-Animation */
+@keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(10deg) scale(1.05); }
+    50% { transform: rotate(-10deg) scale(1.05); }
+    75% { transform: rotate(5deg) scale(1.02); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+
+.die.rolling {
+    animation: diceRoll 0.5s ease-out infinite; /* Endlos animieren, bis JS sie stoppt */
+    background-color: #ffe0b2; /* Helle Farbe während des Rollens */
+    color: #e65100; /* Dunklere Fragezeichenfarbe */
+}
+
+
+/* Start/Neustart-Button */
+#startButton {
+    padding: 12px 25px;
+    font-size: 18px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Feedback-Nachricht */
+#feedback {
+    min-height: 1.2em;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 15px;
+}
+#feedback.correct { color: #28a745; }
+#feedback.incorrect { color: #dc3545; }
+#feedback.info { color: #555; }
+
+
+/* Zahlenraster */
+
+/* Titel für das Raster (jetzt innerhalb der Box) */
+#grid-title {
+    font-size: 1.4em; /* Etwas kleiner */
+    margin-top: 30px;  /* Abstand zum Feedback/Button */
+    margin-bottom: 15px;
+    display: none; /* Standardmäßig versteckt */
+}
+
+#sum-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+}
+.sum-button {
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+.sum-button:hover:not(:disabled) { background-color: #e6f2ff; }
+.sum-button:disabled {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* --------------- Highscore-Liste CSS --------------- */
+#highscore-container {
+    width: 90%;
+    max-width: 440px;
+    margin-top: 40px; /* Abstand zur Spiel-Box */
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    box-sizing: border-box;
+}
+#highscore-container h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #007bff;
+}
+
+#highscore-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#highscore-list li {
+    padding: 5px 0;
+    font-size: 1.1em;
+    border-bottom: 1px solid #f0f2f5;
+}
+#highscore-list li:last-child {
+    border-bottom: none;
+}
+#highscore-list li strong {
+    color: #333;
+    margin-left: 5px;
+}
+
+/* --------------- Popup-Modal CSS --------------- */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#modal-overlay.hidden {
+    display: none;
+}
+#modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 350px;
+}
+#modal-content h2 {
+    margin-top: 0;
+    color: #007bff;
+}
+#score-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+#score-form label {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+#score-form input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+#score-form button {
+    padding: 12px;
+    font-size: 1.1em;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

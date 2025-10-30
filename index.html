@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Würfelsumme Highscore</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="https://example.com" id="home-link">🎄Adventskalender🎄</a>
+
+<div id="game-container">
+    <h1>Würfelspiel</h1>
+    <div id="streak-display">Aktuelle Serie: <span id="streak-counter">0</span></div>
+    <div id="score-display">Score: <span id="score-counter">0</span></div>
+
+    <div id="timer-bar-container">
+        <div id="timer-bar"></div>
+    </div>
+
+    <div id="dice-container">
+        <div class="die" id="die1">⚀</div>
+        <div class="die" id="die2">⚀</div>
+    </div>
+
+    <button id="startButton">Spiel starten!</button>
+
+    <div id="feedback"></div>
+
+    <h2 id="grid-title">Wähle die korrekte Summe:</h2>
+    <div id="sum-grid">
+    </div>
+
+</div>
+
+<div id="highscore-container">
+    <h2>🏆 Top 5 Highscores</h2>
+    <ul id="highscore-list">
+        <li>Lade Scores...</li>
+    </ul>
+</div>
+
+<div id="modal-overlay" class="hidden">
+    <div id="modal-content">
+        <h2>Glückwunsch! Top 5!</h2>
+        <p>Dein Score: <strong id="modal-score">0</strong></p>
+
+        <form id="score-form">
+            <label for="name-input">Dein Name:</label>
+            <input type="text" id="name-input" required maxlength="15" placeholder="Max. 15 Zeichen">
+            <button type="submit">Speichern</button>
+        </form>
+    </div>
+</div>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>
