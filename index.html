@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Würfelsumme Highscore</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Dein kopiertes firebaseConfig-Objekt von Schritt 1
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQm4tHxgKq_FXrFFfQkAcmz9f3qku7s6Q",
+            authDomain: "advent-2bc61.firebaseapp.com",
+            projectId: "advent-2bc61",
+            storageBucket: "advent-2bc61.firebasestorage.app",
+            messagingSenderId: "1003847932879",
+            appId: "1:1003847932879:web:89ba9b46988b8d45e790ba",
+            measurementId: "G-GT4V6T1Y2F"
+        };
+
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(); // Firestore-Datenbank-Referenz
+    </script>
+
+    <script src="script.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
 </head>

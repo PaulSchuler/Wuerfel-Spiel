@@ -1,2 +1,27 @@
 const SUPABASE_URL = 'https://gnwhwjhfwzljnbptluji.supabase.co'; // <-- ERSETZEN!
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdud2h3amhmd3psam5icHRsdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3NjM0ODQsImV4cCI6MjA3NzMzOTQ4NH0.-h4wiRzR42vNxJh0VPyTWeGKrW6kB9E871DazvqvXio'; // <-- ERSETZEN!
+
+
+
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAQm4tHxgKq_FXrFFfQkAcmz9f3qku7s6Q",
+  authDomain: "advent-2bc61.firebaseapp.com",
+  projectId: "advent-2bc61",
+  storageBucket: "advent-2bc61.firebasestorage.app",
+  messagingSenderId: "1003847932879",
+  appId: "1:1003847932879:web:89ba9b46988b8d45e790ba",
+  measurementId: "G-GT4V6T1Y2F"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

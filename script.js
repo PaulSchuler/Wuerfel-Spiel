@@ -1,16 +1,4 @@
 // ===============================================
-// 1. SUPABASE CLIENT INITIALISIEREN
-// ===============================================
-const SUPABASE_URL = 'https://gnwhwjhfwzljnbptluji.supabase.co'; // <-- ERSETZEN!
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdud2h3amhmd3psam5icHRsdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3NjM0ODQsImV4cCI6MjA3NzMzOTQ4NH0.-h4wiRzR42vNxJh0VPyTWeGKrW6kB9E871DazvqvXio'; // <-- ERSETZEN!
-
-if (!window.supabase) {
-    alert('Supabase-Client konnte nicht geladen werden. Überprüfe die Internetverbindung oder den Skript-Tag.');
-}
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-
-// ===============================================
 // 2. GLOBALE SPIEL-VARIABLEN
 // ===============================================
 let currentRoll1 = 1;
@@ -68,36 +56,45 @@ const nameInput = document.getElementById('name-input');
  * Funktion zum Laden der Highscores
  */
 async function loadHighscores() {
-    const { data, error } = await supabase
-        .from('highscores')
-        .select('*')
-        .order('score', { ascending: false })
-        .limit(5); // Lädt Top 5
+    try {
+        const snapshot = await db.collection('highscores')
+            .orderBy('score', 'desc') // 'desc' für descending (absteigend)
+            .limit(5)
+            .get();
 
-    if (error) {
+        topHighscores = []; // Leere den lokalen Cache
+
+        snapshot.forEach(doc => {
+            // Speichere die Daten UND die Dokument-ID
+            // Die ID brauchen wir später für das Update
+            topHighscores.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        highscoreList.innerHTML = '';
+        if (topHighscores.length === 0) {
+            highscoreList.innerHTML = '<li>Noch keine Scores vorhanden.</li>';
+        }
+
+        topHighscores.forEach((entry, index) => {
+            const li = document.createElement('li');
+            let rank = index + 1;
+            if(rank === 1) rank = '🥇';
+            else if(rank === 2) rank = '🥈';
+            else if(rank === 3) rank = '🥉';
+            else rank = `${rank}.`;
+
+            // doc.data() gibt { player_name: "Test", score: 100 } zurück
+            li.innerHTML = `${rank} <strong>${entry.player_name}:</strong> ${entry.score}`;
+            highscoreList.appendChild(li);
+        });
+
+    } catch (error) {
         console.error('Fehler beim Laden der Scores:', error);
         highscoreList.innerHTML = '<li>Fehler beim Laden der Scores.</li>';
-        return;
     }
-
-    topHighscores = data;
-
-    highscoreList.innerHTML = '';
-    if (data.length === 0) {
-        highscoreList.innerHTML = '<li>Noch keine Scores vorhanden.</li>';
-    }
-
-    data.forEach((entry, index) => {
-        const li = document.createElement('li');
-        let rank = index + 1;
-        if(rank === 1) rank = '🥇';
-        else if(rank === 2) rank = '🥈';
-        else if(rank === 3) rank = '🥉';
-        else rank = `${rank}.`;
-
-        li.innerHTML = `${rank} <strong>${entry.player_name}:</strong> ${entry.score}`;
-        highscoreList.appendChild(li);
-    });
 }
 
 /**
@@ -117,43 +114,46 @@ async function submitHighscore(event) {
     submitButton.disabled = true;
     submitButton.textContent = 'Speichere...';
 
+    // Diese Logik funktioniert weiterhin, da loadHighscores()
+    // 'topHighscores' mit { id, player_name, score } füllt.
     const existingEntry = topHighscores.find(entry =>
         entry.player_name.toLowerCase() === playerNameCheck
     );
 
     let error = null;
 
-    if (existingEntry) {
-        if (score > existingEntry.score) {
-            // Neuer Score ist BESSER -> UPDATE
-            const { error: updateError } = await supabase
-                .from('highscores')
-                .update({
+    try {
+        if (existingEntry) {
+            if (score > existingEntry.score) {
+                // Neuer Score ist BESSER -> UPDATE
+                // Wir nutzen die 'id' des Dokuments, die wir in loadHighscores gespeichert haben
+                const docRef = db.collection('highscores').doc(existingEntry.id);
+                await docRef.update({
                     score: score,
-                    player_name: playerNameRaw
-                })
-                .eq('id', existingEntry.id);
-            error = updateError;
+                    player_name: playerNameRaw // Name auch aktualisieren (z.B. für Groß/Kleinschreibung)
+                });
+            } else {
+                // Neuer Score ist SCHLECHTER ODER GLEICH -> Nichts tun
+                showRestartButton('not_better');
+                // ... (Button-Reset-Code von unten) ...
+                nameInput.value = '';
+                modalOverlay.classList.add('hidden');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Speichern';
+                return;
+            }
+
         } else {
-            // Neuer Score ist SCHLECHTER ODER GLEICH -> Nichts tun
-            showRestartButton('not_better');
-
-            nameInput.value = '';
-            modalOverlay.classList.add('hidden');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Speichern';
-            return;
-        }
-
-    } else {
-        // Neuer Spieler in den Top 5 -> INSERT
-        const { error: insertError } = await supabase
-            .from('highscores')
-            .insert({
+            // Neuer Spieler in den Top 5 -> INSERT (add)
+            // Füge auch ein Zeitstempel hinzu (gute Praxis)
+            await db.collection('highscores').add({
                 player_name: playerNameRaw,
-                score: score
+                score: score,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() // Zeitstempel
             });
-        error = insertError;
+        }
+    } catch (e) {
+        error = e; // Fehler abfangen
     }
 
     if (error) {
@@ -168,7 +168,7 @@ async function submitHighscore(event) {
         submitButton.disabled = false;
         submitButton.textContent = 'Speichern';
 
-        loadHighscores();
+        loadHighscores(); // Highscores neu laden
         showRestartButton('submit');
     }
 }
